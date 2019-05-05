@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"declaration": true,
+		"declarationDir": "lib/typings/",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"allowSyntheticDefaultImports": true,
+		"module": "commonjs",
+		"outDir": "dist/",
+		"preserveConstEnums": true,
+		"removeComments": false,
+		"target": "esnext",
+		"jsx": "react"
+	},
+	"jsdoc": "docs",
+	"compileOnSave": true,
+	"include": [
+		"./lib/**/*.ts", "test/**/*.ts"
+	],
+	"exclude": [ "./node_modules/", "dist/", "lib/typings" ]
+}
