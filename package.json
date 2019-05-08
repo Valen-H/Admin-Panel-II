@@ -1,69 +1,74 @@
 {
-  "name": "adm-panel2",
-  "version": "0.0.0",
-  "description": "A process admin panel with support for WebDAV and CLI commands (& websockets etc...)",
-  "keywords": [
-    "cli",
-    "webdav",
-    "sockets",
-    "process",
-    "panel",
-    "restart"
-  ],
-  "homepage": "https://github.com/ValentinHacker/Admin-panel-ii#README.md",
-  "bugs": {
-    "url": "https://github.com/ValentinHacker/Admin-panel-ii/issues",
-    "email": "alternativexxxy@gmail.com"
-  },
-  "license": "ISC",
-  "author": "V. H. <alternativexxxy@gmail.com>",
-  "contributors": [],
-  "files": [
-    "*"
-  ],
-  "main": "dist/panel.js",
-  "bin": {},
-  "man": [],
-  "directories": {
-    "lib": "./lib",
-    "bin": "./bin",
-    "man": "./doc",
-    "doc": "./doc",
-    "example": "./test",
-    "test": "./test"
-  },
-  "typings": "lib/typings",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/ValentinHacker/Admin-panel-ii.git",
-    "directory": "./"
-  },
-  "config": {
-    "port": 8080
-  },
-  "dependencies": {
-    "fs-extra": "^7.0.1",
-    "socket.io": "^2.2.0",
-    "socket.io-client": "^2.2.0",
-    "vale-server-ii": "file:../Server/Server"
-  },
-  "devDependencies": {
-    "@types/node": "^12.0.0",
-    "typescript": "^3.4.5"
-  },
-  "peerDependencies": {},
-  "optionalDependencies": {},
-  "engines": {
-    "node": ">=10.5.0",
-    "npm": ">=3.0.0"
-  },
-  "os": [],
-  "cpu": [],
-  "publishConfig": {},
-  "scripts": {
-    "test": "node test/index.js",
-    "bat": "./start.bat",
-    "build": "npx tsc -w"
-  },
-  "bundleDependencies": []
+    "name": "adm-panel2",
+    "version": "0.0.0",
+    "description": "A process admin panel with support for WebDAV and CLI commands (& websockets etc...)",
+    "keywords": [
+        "cli",
+        "webdav",
+        "sockets",
+        "process",
+        "panel",
+        "restart"
+    ],
+    "homepage": "https://github.com/ValentinHacker/Admin-panel-ii#README.md",
+    "bugs": {
+        "url": "https://github.com/ValentinHacker/Admin-panel-ii/issues",
+        "email": "alternativexxxy@gmail.com"
+    },
+    "license": "ISC",
+    "author": "V. H. <alternativexxxy@gmail.com>",
+    "contributors": [],
+    "files": [
+        "*"
+    ],
+    "main": "dist/lib/panel.js",
+    "bin": {},
+    "man": [],
+    "directories": {
+        "lib": "./lib",
+        "bin": "./bin",
+        "man": "./doc",
+        "doc": "./doc",
+        "example": "./test",
+        "test": "./test"
+    },
+    "typings": "lib/typings",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/ValentinHacker/Admin-panel-ii.git",
+        "directory": "./"
+    },
+    "config": {
+        "port": 8080
+    },
+    "dependencies": {
+        "fs-extra": "^7.0.1",
+        "socket.io": "^2.2.0",
+        "socket.io-client": "^2.2.0",
+        "vale-server-ii": "file:../Server/Server"
+    },
+    "devDependencies": {
+        "@types/fs-extra": "^5.1.0",
+        "@types/node": "^12.0.0",
+        "@types/socket.io": "^2.1.2",
+        "tslib": "^1.9.3",
+        "typescript": "^3.4.5"
+    },
+    "peerDependencies": {},
+    "optionalDependencies": {
+        "chalk": "^2.4.2"
+    },
+    "engines": {
+        "node": ">=12.0.0",
+        "npm": ">=3.0.0"
+    },
+    "os": [],
+    "cpu": [],
+    "publishConfig": {},
+    "scripts": {
+        "test": "node --experimental-worker test/index.js || npm test",
+        "bat": "./start.bat",
+        "build": "npx tsc -w"
+    },
+    "bundleDependencies": []
 }
