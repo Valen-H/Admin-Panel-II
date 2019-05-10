@@ -32,7 +32,7 @@
         "example": "./test",
         "test": "./test"
     },
-    "typings": "lib/typings",
+    "typings": "lib/typings/lib/panel.d.ts",
     "repository": {
         "type": "git",
         "url": "git://github.com/ValentinHacker/Admin-panel-ii.git",

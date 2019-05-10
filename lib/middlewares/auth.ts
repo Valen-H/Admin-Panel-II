@@ -3,8 +3,8 @@ import * as vserv from "vale-server-ii";
 
 module.exports = {
 	name: "auth",
-	afters: [ "fix" ],
-	befores: [ "directory", "static", "end" ],
+	afters: [ ],
+	befores: [ "fix", "directory", "static", "end" ],
 	_fromFile: true,
 	body: async function body(req: http.IncomingMessage, res: http.ServerResponse, event: vserv.Classes.evt): Promise<boolean> {
 		if (!event.carriage._global.patherr) {

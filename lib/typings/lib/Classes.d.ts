@@ -10,24 +10,42 @@ export declare var chalk: Function;
 export declare module Classes {
     namespace Options {
         interface PanelOpts {
-            auth?: string;
+            auth: string;
             subopts?: vserv.Classes.Options.ServerOptions;
             sockopts?: socket.ServerOptions;
+        }
+        interface CommandOpts {
+            name: string;
+            exp: RegExp;
+            desc: string;
+            usage: string;
+            _priority: number;
+            _compl: string;
+            _domain: Types.DOMAINS;
+        }
+    }
+    namespace Types {
+        enum DOMAINS {
+            CLI,
+            WS,
+            WEBDAV,
+            UI
         }
     }
     namespace Errors {
         const ENORL: ReferenceError;
         const EALRRL: AssertionError;
     }
-    class Command {
+    class Command implements Options.CommandOpts {
         name: string;
         exp: RegExp;
         desc: string;
         usage: string;
         _priority: number;
         _compl: string;
+        _domain: Types.DOMAINS;
         static prefix: string;
-        constructor(ctor: Command);
+        constructor(ctor: Options.CommandOpts);
         body(...params: any[]): Promise<void>;
         parse(line: string, panel: Panel): Promise<void>;
     }
@@ -38,8 +56,8 @@ export declare module Classes {
         serv: vserv.Classes.Server;
         sock: socket.Server;
         opts: Options.PanelOpts;
-        _debug: boolean;
         cmds: Command[];
+        _debuglog: string;
         static defaultOpts: Options.PanelOpts;
         constructor(opts?: Options.PanelOpts);
         start(opts?: vserv.Classes.Options.ServerOptions): Promise<this>;
@@ -49,6 +67,7 @@ export declare module Classes {
         }): Promise<readline.Interface>;
         toggleCLI(state?: boolean): this;
         _loadCLI(from?: string): Promise<{}>;
+        _debug(...msg: any[]): this;
     }
     class Stats {
         constructor();

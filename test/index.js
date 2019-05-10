@@ -6,9 +6,8 @@ const fs = require("fs-extra"),
 fs.removeSync("__Server/middleware");
 fs.copySync("dist/lib/commands", "__Server/commands");
 var mwrs = fs.readdirSync("dist/lib/middlewares"),
-	panel = Panel.setup();
+	panel = global["PANEL"] = Panel.setup();
 
-panel._debug = true;
 panel.cli({input: process.stdin, output: process.stdout});
 
 panel.start().then(() => {
@@ -16,6 +15,8 @@ panel.start().then(() => {
 		fs.copyFileSync("dist/lib/middlewares/" + mwr, "__Server/middleware/" + mwr);
 	}
 
+	panel.on("_debug", console.info);
+	panel.serv.on("_debug", console.info);
 	panel.serv._loadMW("dist/lib/middlewares/");
 	console.log("Started.");	
 });
