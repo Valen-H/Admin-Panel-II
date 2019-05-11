@@ -1,0 +1,56 @@
+#main1 {
+	width: 100vw;
+	height: 100vh;
+	margin: 0;
+	background-image: radial-gradient(white 10%, lightgrey 80%, gray 120%);
+	position: fixed;
+	top: 0;
+	left: 0;
+	text-align: center;
+	overflow: auto;
+}
+
+#second1 {
+	border: 1px dashed gray;
+	margin: 2px;
+}
+
+#main1 #report,
+#main1 #logs,
+#main1 #debug,
+#main1 #cli {
+	background-color: rgba(50, 45, 60, 0.65);
+	text-align: left;
+	padding: 5px;
+	font-size: 1.1em;
+	display: block;
+	color: rgba(235, 235, 200, 0.95);
+	margin: 5px;
+	border-radius: 3%;
+	line-height: 80%;
+}
+
+#main1 #logs,
+#main1 #debug,
+#main1 #cli {
+	max-height: 20vh;
+	min-height: 5vh;
+	font-size: .9em !important;
+	overflow: auto;
+}
+
+#main1 #cli-a {
+	resize: none;
+	width: 90%;
+}
+
+#main1 button {
+	border-radius: 10%;
+	transition: 200ms all;
+	box-shadow: 2px 2px 1px 4px rgba(100, 100, 100, .5);
+}
+
+#main1 button:hover {
+	background-color: rgba(235, 235, 200, 0.95);
+	box-shadow: 1px 1px 0px 2px rgba(100, 100, 100, .5);
+}

@@ -1,9 +1,6 @@
 webpack.config.js
 .babelrc
-__Server/
-start.bat
 tsconfig.tsbuildinfo
-.vscode/
 
 *.sln
 *.njsproj

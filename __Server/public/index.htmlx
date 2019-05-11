@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<title>Panel</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="Index" />
+	<meta name="keywords" content="index" />
+	<meta name="author" content="V. H., alternativexxxy@gmail.com" />
+	<meta name="copyright" content="V. H. 2k19" />
+	<meta name="designer" content="V. H., alternativexxxy@gmail.com" />
+	<meta name="owner" content="V. H., alternativexxxy@gmail.com" />
+	<meta name="reply-to" content="alternativexxxy@gmail.com" />
+	<meta name="robots" content="noindex, follow, noimageindex" />
+	<meta name="pagename" content="Root" />
+	<meta name="revised" content="10-May-19" />
+	<meta name="topic" content="Folder" />
+	<meta name="summary" content="Index" />
+	<meta name="Classification" content="Index" />
+	<base href="$$event.server.opts.root$$/" />
+	<link rel="icon" href="/panel/favicon.ico" type="image/x-icon" />
+	<link href="$$event.server.opts.root$$/main.css" rel="stylesheet" />
+	<script src="/ws/socket.io.js"></script>
+	<script src="$$event.server.opts.root$$/socket.js" defer></script>
+	<script src="$$event.server.opts.root$$/index.js" defer></script>
+</head>
+<body>
+	<div id="main1">
+		<h1 style="margin: 5px">Admin Panel</h1><hr />
+		<button id="update" style="color: green" onclick="settings.elements.report.update(event)">Toggle Updating</button><br />
+		<section id="report">
+			<samp id="ws">WS-Status: </samp><code id="ws-c">?</code> | <button id="ws-b1" onclick="settings.elements.report.wsb1()">Toggle</button> <button id="ws-b2" onclick="settings.elements.report.wsb2()">Kill Process</button><br />
+			<div id="os">
+				<samp id="arch">Arch: </samp><code id="arch-c">?</code><br />
+				<samp id="platform">Platform: <code id="platform-c">?</code> (<code id="type-c">?</code>)</samp><br />
+				<samp id="release">Release: </samp><code id="release-c">?</code><br />
+				<samp id="endian">Endianness: </samp><code id="endian-c">?</code><br />
+				<samp id="home">HOME: </samp><code id="home-c">?</code><br />
+				<samp id="host">HOST: </samp><code id="host-c">?</code><br />
+				<samp id="tmp">TMPDIR: </samp><code id="tmp-c">?</code><br />
+				<samp id="cwd">PWD: </samp><code id="cwd-c">?</code><hr />
+
+				<samp id="cpus">CPUs: </samp><code id="cpus-c">?</code><br />
+				<samp id="mem">Memory: <code id="freemem-c">?</code> / <code id="totalmem-c">?</code> MB | <meter value="0" min="0" max="100" high="80" low="20" optimum="0" id="mem-b1"></meter> <span id="mem-b2">?</span>%</samp><br />
+				<samp id="priority">Priority: </samp><code id="priority-c">?</code><br />
+				<samp id="up">System Uptime: <code id="up-c">?</code> mins</samp><br />
+				<samp id="pup">Process Uptime: <code id="pup-c">?</code> mins</samp><br />
+				<samp id="cpu">User/System Cpu usage: <code id="cpu-c1">?</code> / <code id="cpu-c2">?</code> ms | Diff: <code id="cpu-c3">?</code> / <code id="cpu-c4">?</code> ms</samp><hr />
+
+				<samp id="rss">RSS: <code id="rss-c">?</code> MB</samp><br />
+				<samp id="stack">Code/Stack Segment: <code id="stack-c1">?</code> MB | <code id="stack-c2">?</code>% <small>(of RSS)</small></samp><br />
+				<samp id="total">Total Heap: <code id="total-c1">?</code> MB | <code id="total-c2">?</code>% <small>(of RSS)</small></samp><br />
+				<samp id="used">Used Heap: <code id="used-c1">?</code> MB | <code id="used-c2">?</code>% <small>(of Total Heap)</small></samp><br />
+				<samp id="free">Free Heap: <code id="free-c1">?</code> MB | <code id="free-c2">?</code>% <small>(of Total Heap)</small></samp><br />
+				<samp id="ext">External: <code id="ext-c">?</code> MB</samp><br />
+			</div>
+		</section><br />
+		<div id="second1">
+			<button id="autoscroll" onclick="settings.elements.second1.autoscrollb1()" style="color: green">Toggle Autoscroll</button> <button id="clear" onclick="settings.elements.second1.clear()">Clear</button><br />
+			<h2>Logs</h2>
+			<article><pre id="logs"></pre></article>
+			<h2>Debug</h2>
+			<article><pre id="debug"></pre></article>
+			<h2>CLI</h2>
+			<article><pre id="cli"></pre></article>
+			<input id="cli-a" type="text" placeholder="input..." autofocus onkeydown="settings.elements.second1.text(event)"></input>
+		</div>
+		<!-- Stats sect -->
+	</div>
+</body>
+</html>

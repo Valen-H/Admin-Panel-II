@@ -58,6 +58,8 @@ export declare module Classes {
         opts: Options.PanelOpts;
         cmds: Command[];
         _debuglog: string;
+        refresh: boolean;
+        custping: number;
         static defaultOpts: Options.PanelOpts;
         constructor(opts?: Options.PanelOpts);
         start(opts?: vserv.Classes.Options.ServerOptions): Promise<this>;

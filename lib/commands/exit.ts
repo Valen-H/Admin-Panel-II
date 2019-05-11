@@ -6,7 +6,7 @@ export var command = new Classes.Command({
 	name: "exit",
 	desc: "Stop Panel CLI",
 	exp: new RegExp('^' + Classes.Command.prefix + "((sto?p|e(xit)?)|pause( \\d+)?)$", "sim"),
-	usage: eval("'" + Classes.Command.prefix + "'") + "((stop|exit)|pause[ time<Nummber>])",
+	usage: eval("'" + Classes.Command.prefix + "'") + "((stop|exit)|pause[ time<Number>])",
 	_compl: eval("'" + Classes.Command.prefix + "'") + "stop",
 	_priority: 1,
 	body: function body(panel, time?: number) {

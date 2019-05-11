@@ -1,6 +1,6 @@
 {
     "name": "adm-panel2",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "description": "A process admin panel with support for WebDAV and CLI commands (& websockets etc...)",
     "keywords": [
         "cli",

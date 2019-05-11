@@ -10,11 +10,10 @@ import * as vserv from "vale-server-ii";
 import socket from "socket.io";
 import * as readline from "readline";
 import * as path from "path";
-import * as fs from "fs";
+import * as fs from "fs-extra";
 import * as util from "util";
 import { AssertionError } from 'assert';
 import Socket from './socket';
-import { Domain } from 'domain';
 
 export var chalk: Function;
 
@@ -100,11 +99,14 @@ export module Classes {
 		opts: Options.PanelOpts;
 		cmds: Command[] = [ ];
 		_debuglog: string = "";
+		refresh: boolean = true;
+		custping: number = 1000;
 
 		static defaultOpts: Options.PanelOpts = {
 			subopts: {
 				port: 9999,
-				root: "/panel"
+				root: "/panel",
+				serveDir: path.resolve("__Server")
 			},
 			sockopts: {
 				path: "/ws",
@@ -132,6 +134,7 @@ export module Classes {
 			await this.serv.bind();
 
 			this.serv.data["auth"] = this.opts.auth;
+			this.serv.data["parent"] = this;
 			this._debug("Panel Started.");
 			return this;
 		} //start
@@ -152,11 +155,16 @@ export module Classes {
 			});
 
 			rl.on("line", async line => {
+				if (this.sock) this.sock.of("/admin").in("admin").emit("cli", "> " + util.inspect(line));
+				let dat;
 				try {
-					console.log(await this.cmds.find(cmd => cmd.exp.test(line)).parse(line, this));
+					console.log(dat = util.inspect(await this.cmds.find(cmd => cmd.exp.test(line)).parse(line, this), true));
 				} catch (err) {
-					console.error(chalk["red"](util.inspect(err)));
+					console.error(dat = chalk["red"](util.inspect(err)));
 				}
+				if (this.sock) this.sock.of("/admin").in("admin").emit("cli", util.inspect(dat, {
+					colors: false
+				}));
 			});
 			rl.on("pause", () => {
 				this._rl_paused = true;

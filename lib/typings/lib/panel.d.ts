@@ -1,6 +1,6 @@
 import Classes from "./Classes";
 export declare module Panel {
-    function setup(opts?: Classes.Options.PanelOpts): Classes.Panel;
+    function setup(opts?: Classes.Options.PanelOpts): Promise<Classes.Panel>;
 }
 export default Panel;
 export { Classes };
