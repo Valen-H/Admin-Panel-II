@@ -10,9 +10,9 @@
         "panel",
         "restart"
     ],
-    "homepage": "https://github.com/ValentinHacker/Admin-panel-ii#README.md",
+    "homepage": "https://github.com/ValentinHacker/Admin-Panel-II#README.md",
     "bugs": {
-        "url": "https://github.com/ValentinHacker/Admin-panel-ii/issues",
+        "url": "https://github.com/ValentinHacker/Admin-Panel-II/issues",
         "email": "alternativexxxy@gmail.com"
     },
     "license": "ISC",
@@ -35,7 +35,7 @@
     "typings": "lib/typings/lib/panel.d.ts",
     "repository": {
         "type": "git",
-        "url": "git://github.com/ValentinHacker/Admin-panel-ii.git",
+        "url": "git://github.com/ValentinHacker/Admin-Panel-II.git",
         "directory": "./"
     },
     "config": {

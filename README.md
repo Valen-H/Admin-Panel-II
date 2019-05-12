@@ -25,6 +25,8 @@
 ## Usage  
   
 ```js
+const Panel = require("adm-panel2");
+
 Panel.setup().then(panel => {
     panel.toggleStats(); //every 1s, take memory snap
     panel.cli({ input: process.stdin, output: process.stdout }); //type '.' (default prefix) and hit 'tab' for completion.
