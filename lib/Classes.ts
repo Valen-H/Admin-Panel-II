@@ -1,19 +1,19 @@
 ﻿"use strict";
 
-
-/**
+/*
  * IMPL: start/stop webserv
  */
 
-
-import * as vserv from "vale-server-ii";
 import socket from "socket.io";
+import Socket from './socket';
+import * as vserv from "vale-server-ii";
+import { AssertionError } from "assert";
+import { EventEmitter } from "events";
 import * as readline from "readline";
 import * as path from "path";
 import * as fs from "fs-extra";
 import * as util from "util";
-import { AssertionError } from 'assert';
-import Socket from './socket';
+import * as os from "os";
 
 export var chalk: Function;
 
@@ -30,12 +30,28 @@ export module Classes {
 	
 	export declare namespace Options {
 		
+		/**
+		 * Options for Classes.Panel
+		 * 
+		 * @author V. H.
+		 * @date 2019-05-12
+		 * @export
+		 * @interface PanelOpts
+		 */
 		export interface PanelOpts {
 			auth: string;
 			subopts?: vserv.Classes.Options.ServerOptions;
 			sockopts?: socket.ServerOptions;
 		} //PanelOpts
 
+		/**
+		 * Options for Classes.Command
+		 * 
+		 * @author V. H.
+		 * @date 2019-05-12
+		 * @export
+		 * @interface CommandOpts
+		 */
 		export interface CommandOpts {
 			name: string;
 			exp: RegExp;
@@ -50,18 +66,44 @@ export module Classes {
 
 	export declare namespace Types {
 
-		export enum DOMAINS {
+		/**
+		 * Obsolete.
+		 * 
+		 * @export
+		 * @enum {number}
+		 */
+		export enum DOMAINS {  //OBS
 			CLI, WS, WEBDAV, UI  //console, websockets, url, inapp ui text-area
 		} //DOMAINS
 
 	} //Types
 
-	export namespace Errors {
+	export namespace Errors {  //Update
 		export const ENORL = new ReferenceError("No suitable readline interface.");
 		export const EALRRL = new AssertionError({ message: "readline interface already exists."});
 	} //Errors
-	
 
+	type SnapReg = {
+		rss: number;
+		th: number;
+		uh: number;
+		ext: number;
+
+		mem: number;  //freemem/totalmem
+
+		us: NodeJS.CpuUsage;
+	};
+	
+	
+	/**
+	 * For CLI commands.
+	 * 
+	 * @author V. H.
+	 * @date 2019-05-12
+	 * @export
+	 * @class Command
+	 * @implements {Options.CommandOpts}
+	 */
 	export class Command implements Options.CommandOpts {
 		name: string;
 		exp: RegExp;
@@ -90,7 +132,16 @@ export module Classes {
 
 	} //Command
 
-	export class Panel extends require("events").EventEmitter {
+	/**
+	 * Starting Interface.
+	 * 
+	 * @author V. H.
+	 * @date 2019-05-12
+	 * @export
+	 * @class Panel
+	 * @extends {EventEmitter}
+	 */
+	export class Panel extends EventEmitter {
 		
 		rl: readline.Interface;
 		_rl_paused: boolean = false;
@@ -99,8 +150,12 @@ export module Classes {
 		opts: Options.PanelOpts;
 		cmds: Command[] = [ ];
 		_debuglog: string = "";
+		_rllog: string = "";
 		refresh: boolean = true;
 		custping: number = 1000;
+		stat: boolean = false;
+		_stats: NodeJS.Timeout;
+		stater: Stats = new Stats;
 
 		static defaultOpts: Options.PanelOpts = {
 			subopts: {
@@ -126,6 +181,15 @@ export module Classes {
 			this.opts = nopts;
 		} //ctor
 		
+		/**
+		 * Start the server and socket.
+		 * 
+		 * @author V. H.
+		 * @date 2019-05-12
+		 * @param {vserv.Classes.Options.ServerOptions} [opts=this.opts.subopts]
+		 * @returns this
+		 * @memberof Panel
+		 */
 		async start(opts: vserv.Classes.Options.ServerOptions = this.opts.subopts) {
 			this.serv = await vserv.Server.setup(opts);
 			this.sock = socket(this.serv.httpsrv, this.opts.sockopts);
@@ -139,6 +203,15 @@ export module Classes {
 			return this;
 		} //start
 
+		/**
+		 * Start a readline.Interface
+		 * 
+		 * @author V. H.
+		 * @date 2019-05-12
+		 * @param {*} { input, output }
+		 * @returns readline.Interface
+		 * @memberof Panel
+		 */
 		async cli({ input, output }) {
 			if (!this.cmds.length) { await this._loadCLI(); }
 			if (this.rl) throw Errors.EALRRL;
@@ -155,16 +228,19 @@ export module Classes {
 			});
 
 			rl.on("line", async line => {
-				if (this.sock) this.sock.of("/admin").in("admin").emit("cli", "> " + util.inspect(line));
+				let tmp;
+				if (this.sock) this.sock.of("/admin").in("admin").emit("cli", tmp =("> " + util.inspect(line)));
+				this._rllog += tmp + "  ---  " + Date() + os.EOL;
 				let dat;
 				try {
 					console.log(dat = util.inspect(await this.cmds.find(cmd => cmd.exp.test(line)).parse(line, this), true));
 				} catch (err) {
 					console.error(dat = chalk["red"](util.inspect(err)));
 				}
-				if (this.sock) this.sock.of("/admin").in("admin").emit("cli", util.inspect(dat, {
+				if (this.sock) this.sock.of("/admin").in("admin").emit("cli", tmp = util.inspect(dat, {
 					colors: false
 				}));
+				this._rllog += tmp + "  ---  " + Date() + os.EOL;
 			});
 			rl.on("pause", () => {
 				this._rl_paused = true;
@@ -178,6 +254,15 @@ export module Classes {
 			return this.rl = rl;
 		} //cli
 
+		/**
+		 * Toggle readline.Interface
+		 * 
+		 * @author V. H.
+		 * @date 2019-05-12
+		 * @param {boolean} [state]
+		 * @returns 
+		 * @memberof Panel
+		 */
 		toggleCLI(state?: boolean) {
 			if (this.rl && state === undefined) {
 				if (this._rl_paused) {
@@ -198,6 +283,48 @@ export module Classes {
 			return this;
 		} //toggleCLI
 
+		/**
+		 * Toggle Stater.
+		 * 
+		 * @author V. H.
+		 * @date 2019-05-12
+		 * @param {boolean} [force]
+		 * @param {number} [ms]
+		 * @returns this
+		 * @memberof Panel
+		 */
+		toggleStats(force?: boolean, ms?: number) {
+			if (force !== undefined) {
+				if (this.stat = force) {
+					this._stats = this.stater._bind(ms);
+					this._debug("Stating started.");
+				} else {
+					clearInterval(this._stats);
+					this._debug("Stating stopped.");
+				}
+			} else {
+				this.stat = !this.stat;
+				if (this.stat) {
+					this._stats = this.stater._bind(ms);
+					this._debug("Stating started.");
+				} else {
+					clearInterval(this._stats);
+					this._debug("Stating stopped.");
+				}
+			}
+
+			return this;
+		} //toggleStats
+
+		/**
+		 * Load CLI commands.
+		 * 
+		 * @author V. H.
+		 * @date 2019-05-12
+		 * @param {string} [from=path.join("__Server", "commands")]
+		 * @returns this.cmds
+		 * @memberof Panel
+		 */
 		async _loadCLI(from: string = path.join("__Server", "commands")) {
 			return new Promise((res, rej) => {
 				fs.readdir(from, (err, files) => {
@@ -221,19 +348,84 @@ export module Classes {
 			});
 		} //_loadCLI
 
+		/**
+		 * Write to _debuglog
+		 * 
+		 * @author V. H.
+		 * @date 2019-05-12
+		 * @param {...any[]} msg
+		 * @returns 
+		 * @memberof Panel
+		 */
 		_debug(...msg: any[]) {
-			this._debuglog += msg.join(' ') + "  ---  " + Date() + '\n';
+			this._debuglog += msg.join(' ') + "  ---  " + Date() + os.EOL;
 			this.emit("_debug", ...msg);
 			return this;
 		} //_debug
 		
 	} //Panel
 
-	export class Stats {
+	/**
+	 * Stater Class for metrics.
+	 * 
+	 * @author V. H.
+	 * @date 2019-05-12
+	 * @export
+	 * @class Stats
+	 * @extends {EventEmitter}
+	 */
+	export class Stats extends EventEmitter {
+
+		keepSamples: number = 100;
+		_prevc = process.cpuUsage();
+		samples: SnapReg[] = [ ];
+		bound: boolean;
 
 		constructor() {
-
+			super();
 		} //ctor
+
+		/**
+		 * Take a metric snapshot.
+		 * 
+		 * @author V. H.
+		 * @date 2019-05-12
+		 * @returns {SnapReg}
+		 * @memberof Stats
+		 */
+		snap() {
+			this._prevc = process.cpuUsage(this._prevc);
+			let mem = process.memoryUsage(),
+				reg: SnapReg = {
+					rss: mem.rss,
+					th: mem.heapTotal,
+					uh: mem.heapUsed,
+					ext: mem.external,
+					us: this._prevc,
+					mem: os.freemem()
+				};
+			this.samples.push(reg);
+			if (this.samples.length > this.keepSamples) {
+				this.samples.shift();
+			}
+			this.emit("snap", reg);
+			return reg;
+		} //snap
+
+		/**
+		 * setInterval for metrics.
+		 * 
+		 * @author V. H.
+		 * @date 2019-05-12
+		 * @param {number} [ms=1000]
+		 * @returns NodeJS.Timeout
+		 * @memberof Stats
+		 */
+		_bind(ms = 1000) {
+			if (!this.bound) {
+				return setInterval(this.snap.bind(this), ms);
+			}
+		} //_bind
 
 	} //Stats
 	

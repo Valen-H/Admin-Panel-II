@@ -9,9 +9,9 @@ export var command = new Classes.Command({
 	usage: eval("'" + Classes.Command.prefix + "'") + "kill interval?<Number> code?<Number>",
 	_compl: eval("'" + Classes.Command.prefix + "'") + "kill ",
 	_priority: 0,
-	body: async function body(time: string, code?: number) {
+	body: function body(time: string, code?: number) {
 		if (time) {
-			setTimeout(() => process.exit(code), Number(time));
+			return setTimeout(() => process.exit(code), Number(time));
 		} else {
 			process.exit();
 		}

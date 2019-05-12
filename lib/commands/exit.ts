@@ -13,7 +13,7 @@ export var command = new Classes.Command({
 		panel.toggleCLI(false);
 		
 		if (time) {
-			setTimeout(panel.toggleCLI, time, true);
+			return setTimeout(panel.toggleCLI, time, true);
 		}
 	}, //body
 	parse: function parse(line: string, panel) {

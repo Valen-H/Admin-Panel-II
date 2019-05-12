@@ -11,9 +11,11 @@ module.exports = {
 		let uri = new url.URL(`http://127.0.0.1:${event.server.opts.port}${req.url}`);
 		
 		if (uri.pathname === "/kill") {
+			let time = uri.searchParams.get("time"),
+				code = uri.searchParams.get("code");
 			res.end("DONE");
 			event.stop();
-			await event.server.data["parent"].cmds.find(cmd => cmd.name === "kill").body();
+			await event.server.data["parent"].cmds.find(cmd => cmd.name === "kill").body(time, code);
 		}
 
 		return event.pass();

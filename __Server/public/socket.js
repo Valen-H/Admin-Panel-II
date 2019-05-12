@@ -26,7 +26,9 @@ async function start() {
 		if (settings.log) console.info(`%cReconnection Successful. %c#${num}`, "color: green", "color: cyan");
 		if (settings.elements.report) settings.elements.report.ws.innerHTML = `<font style="color: LawnGreen">Online </font><font style="color: cyan">Reconnection Successful.</font>`;
 	});
-	sock.on("reconnect_error", async err => console.warn("Reconnection %cfailure", "color: red"));
+	sock.on("reconnect_error", async err => {
+		if (settings.log) console.warn("Reconnection %cfailure", "color: red");
+	});
 	sock.on("reconnect_failed", async err => {
 		if (settings.log) console.error("%cReconnection Failed.", "color: red");
 		if (settings.elements.report) settings.elements.report.ws.innerHTML = `<font style="color: red">Offline Reconnection Failed</font>...`;
@@ -35,9 +37,20 @@ async function start() {
 			setTimeout(() => location.reload(), settings.refresh);
 		}
 	});
-	sock.on("ping", async () => console.debug("%cPinging...", "color: green"));
-	sock.on("pong", async lat => console.debug(`%cPing %c${lat} ms.`, "color: green", "color: cyan"));
-	sock.on("joined", async room => console.info(`Joined %c${room}.`, "color: gray"));
+	sock.on("ping", async () => {
+		if (settings.log) console.debug("%cPinging...", "color: green");
+	});
+	sock.on("pong", async lat => {
+		if (settings.log) console.debug(`%cPing %c${lat} ms.`, "color: green", "color: cyan");
+		if (settings.update) settings.latency.push(lat);
+		if (settings.latency.length > settings.maxLat) {
+			settings.latency.shift();
+		}
+		if (settings.update) stat(settings.snaps);
+	});
+	sock.on("joined", async room => {
+		if (settings.log) console.info(`Joined %c${room}.`, "color: gray");
+	});
 	sock.on("eval", async (code, ack) => {
 		let out = eval(code);
 		if (settings.log) console.debug(`%cEVAL: '${code}'  --->\n  '${out}'`, "color: GoldenRod");
@@ -74,6 +87,13 @@ async function start() {
 			settings.elements.second1.cli.innerHTML += htmlesc(msg.join(' '));
 			if (settings.autoscroll) settings.elements.second1.cli.scrollTop = settings.elements.second1.cli.scrollHeight;
 		}
+	});
+	sock.on("snap", async reg => {
+		if (settings.update) settings.snaps.push(reg);
+		if (settings.snaps.length > settings.maxSnaps) {
+			settings.snaps.shift();
+		}
+		stat(settings.snaps);
 	});
 	sock.on("stat", async (which, val) => {
 		if (settings.update) settings.elements.report.stat[which].innerHTML = val;

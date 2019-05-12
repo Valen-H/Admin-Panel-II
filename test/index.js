@@ -9,6 +9,7 @@ var mwrs = fs.readdirSync("dist/lib/middlewares");
 	
 Panel.setup().then(panel => {
 	global["PANEL"] = panel;
+	panel.toggleStats();
 	panel.cli({ input: process.stdin, output: process.stdout });
 	panel.start().then(() => {
 		for (let mwr of mwrs) {

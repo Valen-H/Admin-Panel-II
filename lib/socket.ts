@@ -7,16 +7,29 @@ import * as os from "os";
 
 export module Socket {
 
+	/**
+	 * Wrapper for setting up the Socket.
+	 * 
+	 * @author V. H.
+	 * @date 2019-05-12
+	 * @export
+	 * @param {SocketIO.Server} io
+	 * @param {Classes.Panel} panel
+	 * @returns {SocketIO.Namespace}
+	 */
 	export function setup(io: SocketIO.Server, panel: Classes.Panel) {
 		let admin = io.of("/admin"),
 			login: boolean = false,
 			ladm: SocketIO.Socket;
 
-		panel.on("_debug", (...data: any[]) => {
+		panel.on("_debug", async (...data: any[]) => {
 			if (ladm) ladm.emit("_debug", ...data);
 		});
-		panel.serv.on("_debug", (...data: any[]) => {
+		panel.serv.on("_debug", async (...data: any[]) => {
 			if (ladm) ladm.emit("_s_debug", ...data);
+		});
+		panel.stater.on("snap", async reg => {
+			if (ladm) ladm.emit("snap", reg);
 		});
 		if (panel.refresh) {
 			let ends: Set<string> = new Set([
@@ -50,6 +63,13 @@ export module Socket {
 			if (!login) {
 				socket.join("admin", async err => {
 					if (!err) {
+						socket.emit("_debug", panel._debuglog);
+						socket.emit("_s_debug", panel.serv._debuglog);
+						socket.emit("cli", panel._rllog);
+						for (let snap of panel.stater.samples) {
+							socket.emit("snap", snap);
+						}
+
 						socket.emit("joined", "admin");
 						panel._debug(`${socket.id} is admin.`);
 						login = true;
@@ -61,29 +81,33 @@ export module Socket {
 						socket.emit("stat", "platform", os.platform());
 						socket.emit("stat", "release", os.release());
 						socket.emit("stat", "type", os.type());
+						socket.emit("stat", "version", process.version);
 
 						let prev1 = process.cpuUsage();
 
 						async function tick() {
 							let mem = process.memoryUsage();
 							prev1 = process.cpuUsage(prev1);
+
 							socket.emit("stat", "freemem", Math.round((os.freemem() / 1024 / 1024 / 1024) * 100) / 100);
 							socket.emit("stat", "totalmem", Math.round((os.totalmem() / 1024 / 1024 / 1024) * 100) / 100);
 							socket.emit("stat", "priority", os.getPriority());
 							socket.emit("stat", "home", os.homedir());
 							socket.emit("stat", "host", os.hostname());
 							socket.emit("stat", "tmp", os.tmpdir());
-							socket.emit("stat", "up", Math.round(os.uptime() / 60 * 10) / 10);
-							socket.emit("stat", "pup", Math.round(process.uptime() / 60 * 10) / 10);
-							socket.emit("stat", "cpuus", process.cpuUsage().user / 1000);
+							socket.emit("stat", "up", Math.round(os.uptime() / 6) / 10);
+							socket.emit("stat", "pup", Math.round(process.uptime() / 6) / 10);
+							socket.emit("stat", "cpuus", process.cpuUsage().user / 1000);  //micro -> milli
 							socket.emit("stat", "cpuusp", prev1.user / 1000);
 							socket.emit("stat", "cpusy", process.cpuUsage().system / 1000);
 							socket.emit("stat", "cpusyp", prev1.system / 1000);
 							socket.emit("stat", "cwd", process.cwd());
-							socket.emit("stat", "rss", Math.round(mem.rss / 1024 / 1024 * 100) / 100);
-							socket.emit("stat", "total1", Math.round(mem.heapTotal / 1024 / 1024 * 100) / 100);
-							socket.emit("stat", "used1", Math.round(mem.heapUsed / 1024 / 1024 * 100) / 100);
-							socket.emit("stat", "ext", Math.round(mem.external / 1024 / 1024 * 100) / 100);
+							socket.emit("stat", "rss", Math.round(100 * mem.rss / 1024 / 1024) / 100);
+							socket.emit("stat", "total1", Math.round(100 * mem.heapTotal / 1024 / 1024) / 100);
+							socket.emit("stat", "used1", Math.round(100 * mem.heapUsed / 1024 / 1024) / 100);
+							socket.emit("stat", "ext", Math.round(100 * mem.external / 1024 / 1024) / 100);
+							socket.emit("stat", "title", process.title);
+							socket.emit("stat", "port", process.debugPort);
 							return tick;
 						} //tick
 

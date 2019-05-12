@@ -22,19 +22,18 @@
 	background-color: rgba(50, 45, 60, 0.65);
 	text-align: left;
 	padding: 5px;
-	font-size: 1.1em;
+	font-size: 1em;
 	display: block;
 	color: rgba(235, 235, 200, 0.95);
 	margin: 5px;
 	border-radius: 3%;
-	line-height: 80%;
+	line-height: 85%;
 }
 
 #main1 #logs,
 #main1 #debug,
 #main1 #cli {
-	max-height: 20vh;
-	min-height: 5vh;
+	height: 15vh;
 	font-size: .9em !important;
 	overflow: auto;
 }

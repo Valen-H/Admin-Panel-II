@@ -66,7 +66,7 @@
     "cpu": [],
     "publishConfig": {},
     "scripts": {
-        "test": "node --experimental-worker test/index.js || npm test",
+        "test": "node --expose-gc --experimental-worker test/index.js || npm test",
         "bat": "./start.bat",
         "build": "npx tsc -w"
     },
