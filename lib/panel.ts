@@ -9,8 +9,7 @@ import { promisify } from "util";
 export module Panel {
 
 	const paccess: Function = promisify(fs.access),
-		copy: Function = promisify(fs.copy),
-		ensureDir: Function = promisify(fs.ensureDir);
+		copy: Function = promisify(fs.copy);
 
 	/**
 	 * Wrapper for setting up the Panel.
@@ -27,7 +26,7 @@ export module Panel {
 		try {
 			await paccess(panel.opts.subopts.serveDir);
 		} catch (ign) {
-			await copy(path.resolve(".." + path.sep + ".." + path.sep + __dirname), panel.opts.subopts.serveDir);
+			await copy(panel.opts._serveDir, panel.opts.subopts.serveDir);
 		}
 
 		return panel;

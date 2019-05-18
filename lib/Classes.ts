@@ -40,6 +40,7 @@ export module Classes {
 		 */
 		export interface PanelOpts {
 			auth: string;
+			_serveDir: string;
 			subopts?: vserv.Classes.Options.ServerOptions;
 			sockopts?: socket.ServerOptions;
 		} //PanelOpts
@@ -156,6 +157,7 @@ export module Classes {
 		stat: boolean = false;
 		_stats: NodeJS.Timeout;
 		stater: Stats = new Stats;
+		
 
 		static defaultOpts: Options.PanelOpts = {
 			subopts: {
@@ -168,7 +170,8 @@ export module Classes {
 				pingInterval: 10000,
 				serveClient: true
 			},
-			auth: "admin:adm"
+			auth: "admin:adm",
+			_serveDir: path.resolve(path.resolve(__dirname, "..", ".."), "__Server")
 		};
 		
 		constructor(opts: Options.PanelOpts = Panel.defaultOpts) {

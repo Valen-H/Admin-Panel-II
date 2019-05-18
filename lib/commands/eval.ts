@@ -1,5 +1,3 @@
-"use strict";
-
 const Classes = module.parent.exports.Classes;
 
 export var command = new Classes.Command({

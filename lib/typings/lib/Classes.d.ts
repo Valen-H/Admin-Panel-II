@@ -17,6 +17,7 @@ export declare module Classes {
          */
         interface PanelOpts {
             auth: string;
+            _serveDir: string;
             subopts?: vserv.Classes.Options.ServerOptions;
             sockopts?: socket.ServerOptions;
         }
