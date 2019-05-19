@@ -7,8 +7,8 @@ export var command = new Classes.Command({
 	usage: "code<String>",
 	_compl: '',
 	_priority: Infinity,
-	body: function body(code: string) {
-		return eval(code);
+	body: async function body(code: string) {
+		return await eval(code);
 	}, //body
 	parse: function parse(line: string, panel) {
 		return this.body(line);

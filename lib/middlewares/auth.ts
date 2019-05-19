@@ -13,6 +13,8 @@ module.exports = {
 			res.setHeader("X-XSS-Protection", "1; mode=block");
 			res.setHeader("Cache-Control", "private, no-store, max-age=3600, must-revalidate");
 			res.setHeader("X-Frame-Options", "sameorigin");
+			res.setHeader("Cache-Control", "max-age=120");
+			res.setHeader("Vary", "User-Agent");
 
 			if (!req.headers["authorization"]) {
 				res.writeHead(401, http.STATUS_CODES[401], {

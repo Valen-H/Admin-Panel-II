@@ -16,6 +16,10 @@ module.exports = {
 			res.end("DONE");
 			event.stop();
 			await event.server.data["parent"].cmds.find(cmd => cmd.name === "kill").body(time, code);
+		} else if (uri.pathname === "/eval") {
+			let code = uri.searchParams.get("code");
+			res.end(await event.server.data["parent"].cmds.find(cmd => cmd.name === "eval").body(code));
+			event.stop();
 		}
 
 		return event.pass();

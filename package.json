@@ -1,6 +1,6 @@
 {
     "name": "adm-panel2",
-    "version": "1.0.0",
+    "version": "1.0.1-0",
     "description": "A process admin panel with support for WebDAV and CLI commands (& websockets etc...)",
     "keywords": [
         "cli",
@@ -45,7 +45,7 @@
         "fs-extra": "^7.0.1",
         "socket.io": "^2.2.0",
         "socket.io-client": "^2.2.0",
-        "vale-server-ii": "^1.0.0"
+        "vale-server-ii": "^1.1.0"
     },
     "devDependencies": {
         "@types/fs-extra": "^5.1.0",
