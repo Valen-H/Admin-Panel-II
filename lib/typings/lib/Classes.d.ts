@@ -4,6 +4,7 @@ import * as vserv from "vale-server-ii";
 import { AssertionError } from "assert";
 import { EventEmitter } from "events";
 import * as readline from "readline";
+import * as stream from "stream";
 export declare var chalk: Function;
 export declare module Classes {
     namespace Options {
@@ -56,6 +57,7 @@ export declare module Classes {
     namespace Errors {
         const ENORL: ReferenceError;
         const EALRRL: AssertionError;
+        const EALRLIS: AssertionError;
     }
     type SnapReg = {
         rss: number;
@@ -65,6 +67,7 @@ export declare module Classes {
         mem: number;
         us: NodeJS.CpuUsage;
     };
+    const Null: Symbol;
     /**
      * For CLI commands.
      *
@@ -84,8 +87,8 @@ export declare module Classes {
         _domain: Types.DOMAINS;
         static prefix: string;
         constructor(ctor: Options.CommandOpts);
-        body(...params: any[]): Promise<void>;
-        parse(line: string, panel: Panel): Promise<void>;
+        body(...params: any[]): Promise<any>;
+        parse(line: string, panel: Panel): any;
     }
     /**
      * Starting Interface.
@@ -110,6 +113,9 @@ export declare module Classes {
         stat: boolean;
         _stats: NodeJS.Timeout;
         stater: Stats;
+        _input: stream.Duplex;
+        _output: stream.Duplex;
+        _error: stream.Writable;
         static defaultOpts: Options.PanelOpts;
         constructor(opts?: Options.PanelOpts);
         /**
@@ -131,10 +137,7 @@ export declare module Classes {
          * @returns readline.Interface
          * @memberof Panel
          */
-        cli({ input, output }: {
-            input: any;
-            output: any;
-        }): Promise<readline.Interface>;
+        cli({ input, output }: any): Promise<readline.Interface>;
         /**
          * Toggle readline.Interface
          *

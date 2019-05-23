@@ -11,7 +11,7 @@ export declare module Socket {
      * @param {Classes.Panel} panel
      * @returns {SocketIO.Namespace}
      */
-    function setup(io: SocketIO.Server, panel: Classes.Panel): import("socket.io").Namespace;
+    function setup(io: SocketIO.Server, panel: Classes.Panel): SocketIO.Namespace;
 }
 export default Socket;
 //# sourceMappingURL=socket.d.ts.map

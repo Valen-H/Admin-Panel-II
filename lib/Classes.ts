@@ -14,6 +14,7 @@ import * as path from "path";
 import * as fs from "fs-extra";
 import * as util from "util";
 import * as os from "os";
+import * as stream from "stream";
 
 export var chalk: Function;
 
@@ -81,7 +82,8 @@ export module Classes {
 
 	export namespace Errors {  //Update
 		export const ENORL = new ReferenceError("No suitable readline interface.");
-		export const EALRRL = new AssertionError({ message: "readline interface already exists."});
+		export const EALRRL = new AssertionError({ message: "readline interface already exists." });
+		export const EALRLIS = new AssertionError({ message: "Already listening."});
 	} //Errors
 
 	type SnapReg = {
@@ -94,6 +96,8 @@ export module Classes {
 
 		us: NodeJS.CpuUsage;
 	};
+
+	export const Null: Symbol = Symbol("NULL");
 	
 	
 	/**
@@ -121,12 +125,12 @@ export module Classes {
 		} //ctor
 
 		//@Override
-		async body(...params: any[]) {
+		async body(...params: any[]): Promise<any> {
 
 		} //body
 
 		//@Override
-		parse(line: string, panel: Panel) {
+		parse(line: string, panel: Panel): any {
 
 			return this.body();
 		} //parse
@@ -157,6 +161,9 @@ export module Classes {
 		stat: boolean = false;
 		_stats: NodeJS.Timeout;
 		stater: Stats = new Stats;
+		_input: stream.Duplex;
+		_output: stream.Duplex;
+		_error: stream.Writable = process.stderr;
 		
 
 		static defaultOpts: Options.PanelOpts = {
@@ -194,6 +201,8 @@ export module Classes {
 		 * @memberof Panel
 		 */
 		async start(opts: vserv.Classes.Options.ServerOptions = this.opts.subopts) {
+			if (this.serv && this.serv.httpsrv.listening) throw Errors.EALRLIS;
+
 			this.serv = await vserv.Server.setup(opts);
 			this.sock = socket(this.serv.httpsrv, this.opts.sockopts);
 
@@ -215,10 +224,13 @@ export module Classes {
 		 * @returns readline.Interface
 		 * @memberof Panel
 		 */
-		async cli({ input, output }) {
+		async cli({ input, output }: any) {
 			if (!this.cmds.length) { await this._loadCLI(); }
 			if (this.rl) throw Errors.EALRRL;
 
+			this._output = output;
+			this._input = input;
+			
 			let completer = (async function completer(line: string, cb) {
 				const completions = this.cmds.map((cmd: Command) => cmd._compl),
 					hits = completions.filter((c: string) => c.startsWith(line));
@@ -231,18 +243,23 @@ export module Classes {
 			});
 
 			rl.on("line", async line => {
-				let tmp;
-				if (this.sock) this.sock.of("/admin").in("admin").emit("cli", tmp =("> " + util.inspect(line)));
+				line = line.trim();
+
+				let tmp: string,
+					dat: any;
+				
+				if (this.sock) this.sock.of("/admin").in("admin").emit("cli", tmp = ("> " + util.inspect(line, { colors: false })));
 				this._rllog += tmp + "  ---  " + Date() + os.EOL;
-				let dat;
+				
 				try {
-					console.log(dat = util.inspect(await this.cmds.find(cmd => cmd.exp.test(line)).parse(line, this), true));
+					dat = await this.cmds.find(cmd => cmd.exp.test(line)).parse(line, this);
+					if (dat !== Null) console.log(dat = util.inspect(dat, true));
 				} catch (err) {
 					console.error(dat = chalk["red"](util.inspect(err)));
 				}
-				if (this.sock) this.sock.of("/admin").in("admin").emit("cli", tmp = util.inspect(dat, {
-					colors: false
-				}));
+				
+				if (this.sock && dat !== Null) this.sock.of("/admin").in("admin").emit("cli", tmp = util.inspect(dat, { colors: false }));
+				
 				this._rllog += tmp + "  ---  " + Date() + os.EOL;
 			});
 			rl.on("pause", () => {
@@ -396,7 +413,7 @@ export module Classes {
 		 * @returns {SnapReg}
 		 * @memberof Stats
 		 */
-		snap() {
+		snap(): SnapReg {
 			this._prevc = process.cpuUsage(this._prevc);
 			let mem = process.memoryUsage(),
 				reg: SnapReg = {
@@ -424,7 +441,7 @@ export module Classes {
 		 * @returns NodeJS.Timeout
 		 * @memberof Stats
 		 */
-		_bind(ms = 1000) {
+		_bind(ms: number = 1000) {
 			if (!this.bound) {
 				return setInterval(this.snap.bind(this), ms);
 			}

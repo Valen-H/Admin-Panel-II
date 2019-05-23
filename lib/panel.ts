@@ -2,7 +2,6 @@
 
 import Classes from "./Classes";
 import * as fs from "fs-extra";
-import * as path from "path";
 import { promisify } from "util";
 
 
@@ -20,7 +19,7 @@ export module Panel {
 	 * @param {Classes.Options.PanelOpts} [opts]
 	 * @returns {Classes.Panel}
 	 */
-	export async function setup(opts?: Classes.Options.PanelOpts) {
+	export async function setup(opts?: Classes.Options.PanelOpts): Promise<Classes.Panel> {
 		let panel: Classes.Panel = new Classes.Panel(opts);
 
 		try {

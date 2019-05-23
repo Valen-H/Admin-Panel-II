@@ -5,7 +5,7 @@ const path = require("path");
 const url_1 = require("url");
 const util_1 = require("util");
 const Classes = module.parent.exports.Classes;
-const pstat = util_1.promisify(fs.stat), preaddir = util_1.promisify(fs.readdir), preadFile = util_1.promisify(fs.readFile);
+const pstat = util_1.promisify(fs.stat), preadFile = util_1.promisify(fs.readFile), cache = new Map();
 module.exports = {
     name: "static",
     afters: ["fix", "directory"],
@@ -52,7 +52,18 @@ module.exports = {
 };
 async function serve(file, event, preproc = true) {
     try {
-        let data = (await preadFile(file)).toString(), prep = /\.((html?|css)x|xjs)$/i;
+        let data, prep = /\.((html?|css)x|xjs)$/i;
+        if (cache.has(file)) {
+            data = cache.get(file);
+            preadFile(file).then((err, buff) => {
+                if (!err)
+                    cache.set(file, buff.toString());
+            });
+        }
+        else {
+            data = (await preadFile(file)).toString();
+            cache.set(file, data);
+        }
         if (prep.test(file)) {
             data = data.replace(event.server.opts.builtmpl, (m, p) => eval(p));
         }

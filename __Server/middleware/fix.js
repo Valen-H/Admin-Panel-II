@@ -5,9 +5,20 @@ const path = require("path");
 const url_1 = require("url");
 const util_1 = require("util");
 const Classes = module.parent.exports.Classes;
-const paccess = util_1.promisify(fs.access), 
-//@ts-ignore
-pdir = util_1.promisify(function readdir(name, callback) { return fs.readdir(name, { withFileTypes: true, encoding: "utf8" }, callback); });
+const paccess = util_1.promisify(fs.access), cachedir = new Map(), preaddir = async function readdir(name) {
+    if (cachedir.has(name)) {
+        //@ts-ignore
+        fs.readdir(name, { withFileTypes: true, encoding: "utf8" }).then((files) => {
+            cachedir.set(name, files);
+        });
+        return cachedir.get(name);
+    }
+    else {
+        //@ts-ignore
+        cachedir.set(name, await fs.readdir(name, { withFileTypes: true, encoding: "utf8" }));
+        return cachedir.get(name);
+    }
+};
 module.exports = {
     name: "fix",
     afters: [],
@@ -33,7 +44,7 @@ module.exports = {
                 if (event.carriage._global.patherr)
                     throw Classes.Errors.EBADPATH;
                 //@ts-ignore
-                let files = await pdir(path.dirname(targ)), reg = new RegExp('^' + path.basename(pth), "i"), //queried filename, recommended: requests without ext
+                let files = await preaddir(path.dirname(targ)), reg = new RegExp('^' + path.basename(pth), "i"), //queried filename, recommended: requests without ext
                 //@ts-ignore
                 pfiles = files.filter((file) => reg.test(file.name)).sort((a, b) => {
                     let s = ["", ""];

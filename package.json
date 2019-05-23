@@ -49,14 +49,15 @@
     },
     "devDependencies": {
         "@types/fs-extra": "^5.1.0",
-        "@types/node": "^12.0.0",
+        "@types/node": "^12.0.2",
         "@types/socket.io": "^2.1.2",
         "tslib": "^1.9.3",
         "typescript": "^3.4.5"
     },
     "peerDependencies": {},
     "optionalDependencies": {
-        "chalk": "^2.4.2"
+        "chalk": "^2.4.2",
+        "strip-ansi": "^5.2.0"
     },
     "engines": {
         "node": ">=12.0.0",

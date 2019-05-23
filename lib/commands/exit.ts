@@ -2,6 +2,8 @@
 
 const Classes = module.parent.exports.Classes;
 
+import { Classes as CT } from "../Classes";
+
 export var command = new Classes.Command({
 	name: "exit",
 	desc: "Stop Panel CLI",
@@ -9,14 +11,14 @@ export var command = new Classes.Command({
 	usage: eval("'" + Classes.Command.prefix + "'") + "((stop|exit)|pause[ time<Number>])",
 	_compl: eval("'" + Classes.Command.prefix + "'") + "stop",
 	_priority: 1,
-	body: function body(panel, time?: number) {
+	body: function body(panel: CT.Panel, time?: number) {
 		panel.toggleCLI(false);
 		
 		if (time) {
 			return setTimeout(panel.toggleCLI, time, true);
 		}
 	}, //body
-	parse: function parse(line: string, panel) {
+	parse: function parse(line: string, panel: CT.Panel) {
 		let nline: string[] = line.split(' ');
 
 		return this.body(panel, Number(nline[1]));

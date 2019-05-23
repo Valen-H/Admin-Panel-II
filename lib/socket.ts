@@ -17,7 +17,7 @@ export module Socket {
 	 * @param {Classes.Panel} panel
 	 * @returns {SocketIO.Namespace}
 	 */
-	export function setup(io: SocketIO.Server, panel: Classes.Panel) {
+	export function setup(io: SocketIO.Server, panel: Classes.Panel): SocketIO.Namespace {
 		let admin = io.of("/admin"),
 			login: boolean = false,
 			ladm: SocketIO.Socket;

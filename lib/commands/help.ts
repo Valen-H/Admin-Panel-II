@@ -3,24 +3,22 @@
 const Classes = module.parent.exports.Classes,
 	chalk = module.parent.exports.chalk;
 
+import { Classes as CT } from "../Classes";
+
 export var command = new Classes.Command({
 	name: "help",
 	desc: "Command help",
-	exp: new RegExp('^' + Classes.Command.prefix + "help( .+)?$", "sim"),
+	exp: new RegExp('^' + Classes.Command.prefix + "h(elp)?( .+)?$", "sim"),
 	usage: eval("'" + Classes.Command.prefix + "'") + "help[ command<String>]",
 	_compl: eval("'" + Classes.Command.prefix + "'") + "help ",
-	/**
-	 * Did you mean
-	 * named
-	 * all
-	 */
 	_priority: 4,
-	body: function body(panel, command: string) {
-		return panel.cmds.filter(cmd => cmd.name.includes(command)).forEach(cmd => {
+	body: function body(panel: CT.Panel, command: string) {
+		panel.cmds.filter((cmd: CT.Command) => cmd.name.includes(command)).forEach((cmd: CT.Command) => {
 			console.log(chalk`{bold ${cmd.name}}:\n\t{dim.underline ${cmd.desc}}\n\n\t${cmd.usage}\n\n`);
 		});
+		return Classes.Null;
 	}, //body
-	parse: function parse(line: string, panel) {
+	parse: function parse(line: string, panel: CT.Panel) {
 		return this.body(panel, line.split(' ').slice(1).join(' '));
 	} //parse
 });
