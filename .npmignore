@@ -1,0 +1,7 @@
+start.bat
+dist/lib/commands/
+dist/lib/middlewares/
+*code-workspace
+*.njsproj*
+*.sln
+.git/
