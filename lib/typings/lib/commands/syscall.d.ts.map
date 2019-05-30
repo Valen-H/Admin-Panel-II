@@ -1,1 +1,1 @@
-{"version":3,"file":"syscall.d.ts","sourceRoot":"","sources":["../../../commands/syscall.ts"],"names":[],"mappings":"AAQA,eAAO,IAAI,OAAO,KA6BhB,CAAC;AAEH,eAAe,OAAO,CAAC"}
+{"version":3,"file":"syscall.d.ts","sourceRoot":"","sources":["../../../commands/syscall.ts"],"names":[],"mappings":"AAMA,OAAO,EAAE,OAAO,IAAI,EAAE,EAAE,MAAM,YAAY,CAAC;AAE3C,eAAO,IAAI,OAAO,EAAE,EAAE,CAAC,OA6BrB,CAAC;AAEH,eAAe,OAAO,CAAC"}

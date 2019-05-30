@@ -18,17 +18,17 @@ export module Socket {
 	 * @returns {SocketIO.Namespace}
 	 */
 	export function setup(io: SocketIO.Server, panel: Classes.Panel): SocketIO.Namespace {
-		let admin = io.of("/admin"),
+		let admin: SocketIO.Namespace = io.of("/admin"),
 			login: boolean = false,
 			ladm: SocketIO.Socket;
 
-		panel.on("_debug", async (...data: any[]) => {
+		panel.on("_debug", async (...data: any[]): Promise<void> => {
 			if (ladm) ladm.emit("_debug", ...data);
 		});
-		panel.serv.on("_debug", async (...data: any[]) => {
+		panel.serv.on("_debug", async (...data: any[]): Promise<void> => {
 			if (ladm) ladm.emit("_s_debug", ...data);
 		});
-		panel.stater.on("snap", async reg => {
+		panel.stater.on("snap", async (reg: Classes.SnapReg): Promise<void> => {
 			if (ladm) ladm.emit("snap", reg);
 		});
 		if (panel.refresh) {
@@ -45,27 +45,28 @@ export module Socket {
 
 			fs.watch(path.join(panel.serv.opts.serveDir, panel.serv.opts.public), {
 				recursive: true
-			}, (evt, file) => {
-					if (panel.refresh && Array.from(ends.values()).some(end => file.endsWith(end))) {
-						panel._debug("Refreshing...");
-						admin.emit("refresh");
-					}
+			}, (evt: string, file: string): void => {
+				if (panel.refresh && Array.from(ends.values()).some(end => file.endsWith(end))) {
+					panel._debug("Refreshing...");
+					admin.emit("refresh");
+				}
 			});
 		}
 		
-		admin.on("connect", async socket => {
+		admin.on("connect", async (socket: SocketIO.Socket): Promise<void> => {
 			panel._debug(socket.id + " connected.");
-			socket.once("disconnecting", async reason => {
+			socket.once("disconnecting", async (reason: string): Promise<void> => {
 				panel._debug(socket.id + " disconnecting  " + reason);
 				login = false;
 			});
 
-			if (!login) {
-				socket.join("admin", async err => {
+			if (!login) {  //user already inside and pass changed?? vulnerable
+				socket.join("admin", async (err: Error): Promise<void> => {
 					if (!err) {
 						socket.emit("_debug", panel._debuglog);
 						socket.emit("_s_debug", panel.serv._debuglog);
 						socket.emit("cli", panel._rllog);
+
 						for (let snap of panel.stater.samples) {
 							socket.emit("snap", snap);
 						}
@@ -83,10 +84,10 @@ export module Socket {
 						socket.emit("stat", "type", os.type());
 						socket.emit("stat", "version", process.version);
 
-						let prev1 = process.cpuUsage();
+						let prev1: NodeJS.CpuUsage = process.cpuUsage();
 
 						async function tick() {
-							let mem = process.memoryUsage();
+							let mem: NodeJS.MemoryUsage = process.memoryUsage();
 							prev1 = process.cpuUsage(prev1);
 
 							socket.emit("stat", "freemem", Math.round((os.freemem() / 1024 / 1024 / 1024) * 100) / 100);
@@ -114,17 +115,17 @@ export module Socket {
 						setInterval(await tick(), panel.custping);
 					}
 				});
-				socket.on("error", async err => {
+				socket.on("error", async (err: Error): Promise<void> => {
 					panel._debug(err);
 				});
-				socket.on("command", async (name, ...params) => {
-					params = params.map(param => param === "$panel$" ? panel : param);
+				socket.on("command", async (name: string, ...params: any[]): Promise<void> => {
+					params = params.map((param: string): string | Classes.Panel => param === "$panel$" ? panel : param);
 					panel._debug(`Command:  ${name} ${params.slice(0, params.length - 1).join(' ')}  -->`);
-					let out = await panel.cmds.find(cmd => cmd.name === name).body(...params);
+					let out = await panel.cmds.find((cmd: Classes.Command): boolean => cmd.name === name).body(...params);
 					panel._debug(`  ${out}`);
 					params[params.length - 1](out);
 				});
-				socket.on("cli", async comm => panel.rl.write(comm + os.EOL));
+				socket.on("cli", async (comm: string): Promise<void> => panel.rl.write(comm + os.EOL));
 			} else {
 				socket.disconnect(true);
 			}

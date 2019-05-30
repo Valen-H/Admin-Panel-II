@@ -14,14 +14,13 @@ import * as path from "path";
 import * as fs from "fs-extra";
 import * as util from "util";
 import * as os from "os";
-import * as stream from "stream";
 
 export var chalk: Function;
 
 try {
 	chalk = require("chalk");
 } catch (opt) {
-	chalk = function chalk(string) {
+	chalk = function chalk(string: string): string {
 		return string;
 	};
 }
@@ -40,10 +39,10 @@ export module Classes {
 		 * @interface PanelOpts
 		 */
 		export interface PanelOpts {
-			auth: string;
-			_serveDir: string;
-			subopts?: vserv.Classes.Options.ServerOptions;
-			sockopts?: socket.ServerOptions;
+			readonly auth: string;
+			readonly _serveDir?: string;
+			readonly subopts?: vserv.Classes.Options.ServerOptions;
+			readonly sockopts?: socket.ServerOptions;
 		} //PanelOpts
 
 		/**
@@ -55,13 +54,13 @@ export module Classes {
 		 * @interface CommandOpts
 		 */
 		export interface CommandOpts {
-			name: string;
-			exp: RegExp;
-			desc: string;
-			usage: string;
-			_priority: number;
-			_compl: string;
-			_domain: Types.DOMAINS;
+			readonly name: string;
+			readonly exp: RegExp;
+			readonly desc?: string;
+			readonly usage?: string;
+			readonly _priority: number;
+			readonly _compl: string;
+			readonly _domain?: Types.DOMAINS;
 		} //CommandOpts
 		
 	} //Options
@@ -81,23 +80,23 @@ export module Classes {
 	} //Types
 
 	export namespace Errors {  //Update
-		export const ENORL = new ReferenceError("No suitable readline interface.");
-		export const EALRRL = new AssertionError({ message: "readline interface already exists." });
-		export const EALRLIS = new AssertionError({ message: "Already listening."});
+		export const ENORL: ReferenceError = new ReferenceError("No suitable readline interface.");
+		export const EALRRL: AssertionError = new AssertionError({ message: "readline interface already exists." });
+		export const EALRLIS: AssertionError = new AssertionError({ message: "Already listening."});
 	} //Errors
 
-	type SnapReg = {
-		rss: number;
-		th: number;
-		uh: number;
-		ext: number;
+	export type SnapReg = {
+		readonly rss: number;
+		readonly th: number;
+		readonly uh: number;
+		readonly ext: number;
 
-		mem: number;  //freemem/totalmem
+		readonly mem: number;  //freemem/totalmem
 
-		us: NodeJS.CpuUsage;
+		readonly us: NodeJS.CpuUsage;
 	};
 
-	export const Null: Symbol = Symbol("NULL");
+	export const Null: symbol = Symbol("NULL");
 	
 	
 	/**
@@ -112,25 +111,44 @@ export module Classes {
 	export class Command implements Options.CommandOpts {
 		name: string;
 		exp: RegExp;
-		desc: string;
-		usage: string;
+		desc?: string;
+		usage?: string;
 		_priority: number = 0;
 		_compl: string;
-		_domain: Types.DOMAINS;
+		_domain?: Types.DOMAINS;
 
-		static prefix: string = "\\.";  //to be inc'd in regex
+		public static prefix: string = "\\.";  //to be inc'd in regex
 
-		constructor(ctor: Options.CommandOpts) {
+		public constructor(ctor: Options.CommandOpts) {
 			Object.assign(this, ctor);
 		} //ctor
 
 		//@Override
-		async body(...params: any[]): Promise<any> {
+		/**
+		 * @description Execute command code.
+		 * @author V. H.
+		 * @date 2019-05-30
+		 * @param {...any[]} params
+		 * @returns {Promise<any>}
+		 * @memberof Command
+		 * @override
+		 */
+		public async body(...params: any[]): Promise<any> {
 
 		} //body
 
 		//@Override
-		parse(line: string, panel: Panel): any {
+		/**
+		 * @description Sanitize before calling `body`
+		 * @author V. H.
+		 * @date 2019-05-30
+		 * @param {string} line
+		 * @param {Panel} panel
+		 * @returns {*}
+		 * @memberof Command
+		 * @override
+		 */
+		public parse(line: string, panel: Panel): any {
 
 			return this.body();
 		} //parse
@@ -149,7 +167,7 @@ export module Classes {
 	export class Panel extends EventEmitter {
 		
 		rl: readline.Interface;
-		_rl_paused: boolean = false;
+		private _rl_paused: boolean = false;
 		serv: vserv.Classes.Server;
 		sock: socket.Server;
 		opts: Options.PanelOpts;
@@ -159,14 +177,14 @@ export module Classes {
 		refresh: boolean = true;
 		custping: number = 1000;
 		stat: boolean = false;
-		_stats: NodeJS.Timeout;
-		stater: Stats = new Stats;
-		_input: stream.Duplex;
-		_output: stream.Duplex;
-		_error: stream.Writable = process.stderr;
+		private _stats: NodeJS.Timeout;
+		readonly stater: Stats = new Stats;
+		_input: NodeJS.ReadStream = process.stdin;
+		_output: NodeJS.WriteStream = process.stdout;
+		_error: NodeJS.WriteStream = process.stderr;
 		
 
-		static defaultOpts: Options.PanelOpts = {
+		public static defaultOpts: Options.PanelOpts = {
 			subopts: {
 				port: 9999,
 				root: "/panel",
@@ -181,7 +199,7 @@ export module Classes {
 			_serveDir: path.resolve(path.resolve(__dirname, "..", ".."), "__Server")
 		};
 		
-		constructor(opts: Options.PanelOpts = Panel.defaultOpts) {
+		public constructor(opts: Options.PanelOpts = Panel.defaultOpts) {
 			super();
 			let nopts: Options.PanelOpts = <Options.PanelOpts>{};
 			
@@ -200,7 +218,7 @@ export module Classes {
 		 * @returns this
 		 * @memberof Panel
 		 */
-		async start(opts: vserv.Classes.Options.ServerOptions = this.opts.subopts) {
+		public async start(opts: vserv.Classes.Options.ServerOptions = this.opts.subopts): Promise<this> {
 			if (this.serv && this.serv.httpsrv.listening) throw Errors.EALRLIS;
 
 			this.serv = await vserv.Server.setup(opts);
@@ -224,16 +242,16 @@ export module Classes {
 		 * @returns readline.Interface
 		 * @memberof Panel
 		 */
-		async cli({ input, output }: any) {
+		public async cli({ input, output }: { input: NodeJS.ReadStream, output: NodeJS.WriteStream, error: NodeJS.WriteStream}) {
 			if (!this.cmds.length) { await this._loadCLI(); }
 			if (this.rl) throw Errors.EALRRL;
 
 			this._output = output;
 			this._input = input;
 			
-			let completer = (async function completer(line: string, cb) {
-				const completions = this.cmds.map((cmd: Command) => cmd._compl),
-					hits = completions.filter((c: string) => c.startsWith(line));
+			let completer: readline.AsyncCompleter = (async function completer(line: string, cb: (err?: Error, result?: [string[], string]) => void): Promise<any> {
+				const completions: string[] = this.cmds.map((cmd: Command) => cmd._compl),
+					hits: string[] = completions.filter((c: string): boolean => c.startsWith(line));
 				
 				return cb(null, [hits.length ? hits : completions, line]);
 			}).bind(this); //completer
@@ -242,7 +260,7 @@ export module Classes {
 				input, output, completer
 			});
 
-			rl.on("line", async line => {
+			rl.on("line", async (line: string): Promise<void> => {
 				line = line.trim();
 
 				let tmp: string,
@@ -252,7 +270,7 @@ export module Classes {
 				this._rllog += tmp + "  ---  " + Date() + os.EOL;
 				
 				try {
-					dat = await this.cmds.find(cmd => cmd.exp.test(line)).parse(line, this);
+					dat = await this.cmds.find((cmd: Command): boolean => cmd.exp.test(line)).parse(line, this);
 					if (dat !== Null) console.log(dat = util.inspect(dat, true));
 				} catch (err) {
 					console.error(dat = chalk["red"](util.inspect(err)));
@@ -262,11 +280,11 @@ export module Classes {
 				
 				this._rllog += tmp + "  ---  " + Date() + os.EOL;
 			});
-			rl.on("pause", () => {
+			rl.on("pause", (): void => {
 				this._rl_paused = true;
 				this._debug("RL paused");
 			});
-			rl.on("resume", () => {
+			rl.on("resume", (): void => {
 				this._rl_paused = false;
 				this._debug("RL resumed");
 			});
@@ -283,7 +301,7 @@ export module Classes {
 		 * @returns 
 		 * @memberof Panel
 		 */
-		toggleCLI(state?: boolean) {
+		public toggleCLI(state?: boolean): this {
 			if (this.rl && state === undefined) {
 				if (this._rl_paused) {
 					this.rl.resume();
@@ -313,7 +331,7 @@ export module Classes {
 		 * @returns this
 		 * @memberof Panel
 		 */
-		toggleStats(force?: boolean, ms?: number) {
+		public toggleStats(force?: boolean, ms?: number): this {
 			if (force !== undefined) {
 				if (this.stat = force) {
 					this._stats = this.stater._bind(ms);
@@ -323,8 +341,7 @@ export module Classes {
 					this._debug("Stating stopped.");
 				}
 			} else {
-				this.stat = !this.stat;
-				if (this.stat) {
+				if (this.stat = !this.stat) {
 					this._stats = this.stater._bind(ms);
 					this._debug("Stating started.");
 				} else {
@@ -345,19 +362,21 @@ export module Classes {
 		 * @returns this.cmds
 		 * @memberof Panel
 		 */
-		async _loadCLI(from: string = path.join("__Server", "commands")) {
-			return new Promise((res, rej) => {
-				fs.readdir(from, (err, files) => {
+		async _loadCLI(from: string = path.join("__Server", "commands")): Promise<Command[]> {
+			return new Promise((res: (value?: Command[] | PromiseLike<Command[]>) => void, rej: (reason?: any) => void): void => {
+				fs.readdir(from, (err: Error, files: string[]): void => {
 					if (!err) {
 						for (let file of files) {
 							let frm: string;
+
 							try {
 								delete require.cache[require.resolve(frm = path.resolve('.' + path.sep + path.join(from, file)))];
 							} catch (ign) { }
+
 							this.cmds.push(require(frm).command);
 						}
 
-						this.cmds.sort((a, b) => a._priority - b._priority);
+						this.cmds.sort((a: Command, b: Command): number => a._priority - b._priority);
 						this._debug(`Loading CLI commands from '${from}' succeeded.`);
 						res(this.cmds);
 					} else {
@@ -377,11 +396,24 @@ export module Classes {
 		 * @returns 
 		 * @memberof Panel
 		 */
-		_debug(...msg: any[]) {
+		_debug(...msg: any[]): this {
 			this._debuglog += msg.join(' ') + "  ---  " + Date() + os.EOL;
 			this.emit("_debug", ...msg);
 			return this;
 		} //_debug
+
+		//@Override
+		public on(event: "_debug", listener: (...args: any[]) => void): this;
+		//@Override
+		public on(event: string | symbol, listener: (...args: any[]) => void): this {
+			return super.on(event, listener);
+		} //on
+		//@Override
+		public once(event: "_debug", listener: (...args: any[]) => void): this;
+		//@Override
+		public once(event: string | symbol, listener: (...args: any[]) => void): this {
+			return super.once(event, listener);
+		} //on
 		
 	} //Panel
 
@@ -397,11 +429,11 @@ export module Classes {
 	export class Stats extends EventEmitter {
 
 		keepSamples: number = 100;
-		_prevc = process.cpuUsage();
+		private _prevc: NodeJS.CpuUsage = process.cpuUsage();
 		samples: SnapReg[] = [ ];
-		bound: boolean;
+		private bound: boolean;
 
-		constructor() {
+		public constructor() {
 			super();
 		} //ctor
 
@@ -413,9 +445,9 @@ export module Classes {
 		 * @returns {SnapReg}
 		 * @memberof Stats
 		 */
-		snap(): SnapReg {
+		public snap(): SnapReg {
 			this._prevc = process.cpuUsage(this._prevc);
-			let mem = process.memoryUsage(),
+			let mem: NodeJS.MemoryUsage = process.memoryUsage(),
 				reg: SnapReg = {
 					rss: mem.rss,
 					th: mem.heapTotal,
@@ -424,10 +456,13 @@ export module Classes {
 					us: this._prevc,
 					mem: os.freemem()
 				};
+			
 			this.samples.push(reg);
+
 			if (this.samples.length > this.keepSamples) {
 				this.samples.shift();
 			}
+
 			this.emit("snap", reg);
 			return reg;
 		} //snap
@@ -441,11 +476,25 @@ export module Classes {
 		 * @returns NodeJS.Timeout
 		 * @memberof Stats
 		 */
-		_bind(ms: number = 1000) {
+		_bind(ms: number = 1000): NodeJS.Timeout {
 			if (!this.bound) {
+				this.bound = true;
 				return setInterval(this.snap.bind(this), ms);
 			}
 		} //_bind
+
+		//@Override
+		public on(event: "snap", listener: (...args: any[]) => void): this;
+		//@Override
+		public on(event: string | symbol, listener: (...args: any[]) => void): this {
+			return super.on(event, listener);
+		} //on
+		//@Override
+		public once(event: "snap", listener: (...args: any[]) => void): this;
+		//@Override
+		public once(event: string | symbol, listener: (...args: any[]) => void): this {
+			return super.once(event, listener);
+		} //on
 
 	} //Stats
 	

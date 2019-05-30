@@ -4,7 +4,6 @@ import * as vserv from "vale-server-ii";
 import { AssertionError } from "assert";
 import { EventEmitter } from "events";
 import * as readline from "readline";
-import * as stream from "stream";
 export declare var chalk: Function;
 export declare module Classes {
     namespace Options {
@@ -17,10 +16,10 @@ export declare module Classes {
          * @interface PanelOpts
          */
         interface PanelOpts {
-            auth: string;
-            _serveDir: string;
-            subopts?: vserv.Classes.Options.ServerOptions;
-            sockopts?: socket.ServerOptions;
+            readonly auth: string;
+            readonly _serveDir?: string;
+            readonly subopts?: vserv.Classes.Options.ServerOptions;
+            readonly sockopts?: socket.ServerOptions;
         }
         /**
          * Options for Classes.Command
@@ -31,13 +30,13 @@ export declare module Classes {
          * @interface CommandOpts
          */
         interface CommandOpts {
-            name: string;
-            exp: RegExp;
-            desc: string;
-            usage: string;
-            _priority: number;
-            _compl: string;
-            _domain: Types.DOMAINS;
+            readonly name: string;
+            readonly exp: RegExp;
+            readonly desc?: string;
+            readonly usage?: string;
+            readonly _priority: number;
+            readonly _compl: string;
+            readonly _domain?: Types.DOMAINS;
         }
     }
     namespace Types {
@@ -60,14 +59,14 @@ export declare module Classes {
         const EALRLIS: AssertionError;
     }
     type SnapReg = {
-        rss: number;
-        th: number;
-        uh: number;
-        ext: number;
-        mem: number;
-        us: NodeJS.CpuUsage;
+        readonly rss: number;
+        readonly th: number;
+        readonly uh: number;
+        readonly ext: number;
+        readonly mem: number;
+        readonly us: NodeJS.CpuUsage;
     };
-    const Null: Symbol;
+    const Null: symbol;
     /**
      * For CLI commands.
      *
@@ -80,14 +79,33 @@ export declare module Classes {
     class Command implements Options.CommandOpts {
         name: string;
         exp: RegExp;
-        desc: string;
-        usage: string;
+        desc?: string;
+        usage?: string;
         _priority: number;
         _compl: string;
-        _domain: Types.DOMAINS;
+        _domain?: Types.DOMAINS;
         static prefix: string;
         constructor(ctor: Options.CommandOpts);
+        /**
+         * @description Execute command code.
+         * @author V. H.
+         * @date 2019-05-30
+         * @param {...any[]} params
+         * @returns {Promise<any>}
+         * @memberof Command
+         * @override
+         */
         body(...params: any[]): Promise<any>;
+        /**
+         * @description Sanitize before calling `body`
+         * @author V. H.
+         * @date 2019-05-30
+         * @param {string} line
+         * @param {Panel} panel
+         * @returns {*}
+         * @memberof Command
+         * @override
+         */
         parse(line: string, panel: Panel): any;
     }
     /**
@@ -101,7 +119,7 @@ export declare module Classes {
      */
     class Panel extends EventEmitter {
         rl: readline.Interface;
-        _rl_paused: boolean;
+        private _rl_paused;
         serv: vserv.Classes.Server;
         sock: socket.Server;
         opts: Options.PanelOpts;
@@ -111,11 +129,11 @@ export declare module Classes {
         refresh: boolean;
         custping: number;
         stat: boolean;
-        _stats: NodeJS.Timeout;
-        stater: Stats;
-        _input: stream.Duplex;
-        _output: stream.Duplex;
-        _error: stream.Writable;
+        private _stats;
+        readonly stater: Stats;
+        _input: NodeJS.ReadStream;
+        _output: NodeJS.WriteStream;
+        _error: NodeJS.WriteStream;
         static defaultOpts: Options.PanelOpts;
         constructor(opts?: Options.PanelOpts);
         /**
@@ -137,7 +155,11 @@ export declare module Classes {
          * @returns readline.Interface
          * @memberof Panel
          */
-        cli({ input, output }: any): Promise<readline.Interface>;
+        cli({ input, output }: {
+            input: NodeJS.ReadStream;
+            output: NodeJS.WriteStream;
+            error: NodeJS.WriteStream;
+        }): Promise<readline.Interface>;
         /**
          * Toggle readline.Interface
          *
@@ -168,7 +190,7 @@ export declare module Classes {
          * @returns this.cmds
          * @memberof Panel
          */
-        _loadCLI(from?: string): Promise<{}>;
+        _loadCLI(from?: string): Promise<Command[]>;
         /**
          * Write to _debuglog
          *
@@ -179,6 +201,8 @@ export declare module Classes {
          * @memberof Panel
          */
         _debug(...msg: any[]): this;
+        on(event: "_debug", listener: (...args: any[]) => void): this;
+        once(event: "_debug", listener: (...args: any[]) => void): this;
     }
     /**
      * Stater Class for metrics.
@@ -191,9 +215,9 @@ export declare module Classes {
      */
     class Stats extends EventEmitter {
         keepSamples: number;
-        _prevc: NodeJS.CpuUsage;
+        private _prevc;
         samples: SnapReg[];
-        bound: boolean;
+        private bound;
         constructor();
         /**
          * Take a metric snapshot.
@@ -214,6 +238,8 @@ export declare module Classes {
          * @memberof Stats
          */
         _bind(ms?: number): NodeJS.Timeout;
+        on(event: "snap", listener: (...args: any[]) => void): this;
+        once(event: "snap", listener: (...args: any[]) => void): this;
     }
 }
 export default Classes;
