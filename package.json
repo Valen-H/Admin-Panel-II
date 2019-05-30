@@ -1,6 +1,6 @@
 {
     "name": "adm-panel2",
-    "version": "1.0.3",
+    "version": "1.0.4-0",
     "description": "A process admin panel with support for WebDAV and CLI commands (& websockets etc...)",
     "keywords": [
         "cli",
@@ -45,7 +45,7 @@
         "fs-extra": "^7.0.1",
         "socket.io": "^2.2.0",
         "socket.io-client": "^2.2.0",
-        "vale-server-ii": "^1.1.0"
+        "vale-server-ii": "^1.1.1"
     },
     "devDependencies": {
         "@types/fs-extra": "^5.1.0",
@@ -68,7 +68,7 @@
     "publishConfig": {},
     "scripts": {
         "test": "node --expose-gc --experimental-worker test/index.js || npm test",
-        "bat": "./start.bat",
+        "debug": "node --inspect-brk=9229 --expose-gc --experimental-worker test/index.js || npm debug",
         "build": "npx tsc -w"
     },
     "bundleDependencies": []
