@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+
+<!-- THIS IS A BUILTIN PAGE, PLEASE DO NOT EDIT IF YOU DON'T KNOW WHAT YOURE DOING!! -->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<title>$$pth$$</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="$$pth$$" />
+	<meta name="keywords" content="index" />
+	<meta name="author" content="V. H., alternativexxxy@gmail.com" />
+	<meta name="copyright" content="V. H. 2k18" />
+	<meta name="designer" content="V. H., alternativexxxy@gmail.com" />
+	<meta name="owner" content="V. H., alternativexxxy@gmail.com" />
+	<meta name="reply-to" content="alternativexxxy@gmail.com" />
+	<meta name="robots" content="noindex, follow, noimageindex" />
+	<meta name="pagename" content="Dir" />
+	<meta name="revised" content="22-Dec-18" />
+	<meta name="topic" content="Folder" />
+	<meta name="summary" content="Index" />
+	<meta name="Classification" content="Indexer" />
+	<!-- <link rel="icon" href="dir.ico" /> -->
+	<base href="$$pth.endsWith('/') ? pth : (pth + '/')$$">  <!-- NOTE!! -->
+	<script src="./index.js"></script>
+	<link rel="stylesheet" href="./index.css" />
+	<style>
+		#main {
+			width: 100vw;
+			height: 100vh;
+			margin: 0;
+			background-image: radial-gradient(white 10%, lightgrey 80%, gray 120%);
+			position: fixed;
+			top: 0;
+			left: 0;
+			text-align: center;
+		}
+		
+		#main > ul {
+			width: 50%;
+			margin: 5% 25% auto 25%;
+			border: 2px solid lightgrey;
+		}
+	</style>
+</head>
+<body>
+	<div id="main">
+		<ul>
+			$$
+				files.map(file => `<a href="./${file}"><li>${file}</li></a>`).join("<br />");
+			$$
+		</ul>
+	</div>
+</body>
+</html>
