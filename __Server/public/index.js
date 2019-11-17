@@ -177,7 +177,7 @@ async function skip() {
 } //skip
 
 function htmlesc(text) {
-	return "<p>" + text/*.replace(/"/gmis, "&quot;")*/.replace(/&/gmis, "&amp;").replace(/</gmis, "&lt;").replace(/>/gmis, "&gt;").replace(/\\n/gmis, "</p><p>") + "</p>";
+	return "<p>" + text/*.replace(/"/gmis, "&quot;")*/.replace(/&/gmi, "&amp;").replace(/</gmi, "&lt;").replace(/>/gmi, "&gt;").replace(/\\n/gmi, "</p><p>") + "</p>";
 } //htmlesc
 
 function parseURL(url = location.href) {
